@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Unmixing the Crowd Examples</title>
+<title>Unmixing the Crowd: Listening Examples</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
@@ -120,14 +120,15 @@ button:focus-visible, .spec:focus-visible { outline: 2px solid var(--focus); out
 <div class="wrap">
   <header>
     <p class="eyebrow">Unmixing the Crowd · SANE 2026 · Soundability Lab, University of Michigan</p>
-    <h1>Hear which voice each embedding pulls out</h1>
-    <p class="lead">Each example is two LibriSpeech talkers speaking at once (50–80% overlap), sometimes with WHAM! background noise. One frozen target speech extractor pulls out each talker, conditioned on a speaker embedding. Only the embedding changes between versions.</p>
+    <h1>Picking out each voice, no enrollment clip needed</h1>
+    <p class="lead">Target speech extractors usually want a few seconds of someone talking on their own before they can pull that person out of a mix. In a real conversation you almost never have that. So we tried something simpler: take the speaker embeddings from the mixture itself and hand them to an off-the-shelf extractor that we didn't retrain at all.</p>
+    <p class="lead">Below are six recordings of two LibriSpeech speakers talking over each other (50–80% of the time), some with real-world background noise from WHAM! added. For each person you can flip between three versions. The extractor is the same in all three. The only thing we change is the embedding we give it.</p>
     <div class="legend" aria-label="Versions">
-      <div class="key"><span class="sw ref"></span><span><b>Clean reference</b>The talker alone, as recorded. What the extractor should produce.</span></div>
-      <div class="key"><span class="sw ours"></span><span><b>Ours</b>Embeddings taken straight from the mixture, one per talker. No enrollment recording.</span></div>
-      <div class="key"><span class="sw dte"></span><span><b>Diarize-then-enroll</b>pyannote 3.1 finds where each talker speaks alone; the same encoder embeds that audio.</span></div>
+      <div class="key"><span class="sw ref"></span><span><b>Clean reference</b>The person on their own, before we mixed anything. This is what we're hoping to get back.</span></div>
+      <div class="key"><span class="sw ours"></span><span><b>Ours</b>One embedding per person, pulled right out of the mixture. No enrollment clip at all.</span></div>
+      <div class="key"><span class="sw dte"></span><span><b>Diarize-then-enroll</b>The obvious alternative. pyannote 3.1 finds the bits where each person talks alone, and the same encoder embeds those.</span></div>
     </div>
-    <p class="note">These six mixtures were chosen from cases where ours scores higher. Across all 3,000 test mixtures, ours averages 10.8 dB SI-SDR improvement and diarize-then-enroll 6.8 dB.</p>
+    <p class="note">To be upfront, we picked these six from mixtures where ours does better. The average holds up too, though: across all 3,000 test mixtures, ours gets 10.8 dB SI-SDR improvement and diarize-then-enroll gets 6.8 dB.</p>
   </header>
 
   <nav class="filters" aria-label="Filter by noise">
@@ -140,9 +141,9 @@ button:focus-visible, .spec:focus-visible { outline: 2px solid var(--focus); out
   <section class="examples" id="examples" aria-live="polite"></section>
 
   <footer>
-    <p><b>How to listen.</b> Press play on a talker, then switch between Clean, Ours and Diarize-then-enroll while it plays: playback continues from the same moment. Click a spectrogram to jump to that point.</p>
-    <p><b>Scores.</b> SI-SDR improvement (dB): how much closer the extracted audio is to the clean talker than the raw mixture is. Higher is better. Both systems use the same frozen extractor and speaker encoder, and both are told there are two talkers.</p>
-    <p><b>Spectrograms.</b> 0–8 kHz, linear frequency, each clip scaled to its own peak over a 75 dB range.</p>
+    <p><b>How to listen.</b> Hit play on one of the speakers and switch between Clean, Ours and Diarize-then-enroll while it's playing. It keeps going from the same spot, so you're comparing the exact same words. You can click anywhere on a spectrogram to jump there. Headphones help a lot, especially for the noisy ones.</p>
+    <p><b>About the numbers.</b> They're SI-SDR improvement in dB, meaning how much closer the output gets to the clean recording compared with the raw mixture. Higher is better. To keep things fair, both methods share the same frozen extractor and the same speaker encoder, and both are told there are two people talking.</p>
+    <p><b>About the spectrograms.</b> They show 0–8 kHz on a linear scale. Each one is scaled to its own loudest point and covers a 75 dB range.</p>
   </footer>
 </div>
 
@@ -240,12 +241,12 @@ DATA.forEach((ex) => {
     <div class="exhead"><h2>Example ${ex.n}</h2>
       <div class="meta"><span class="cond">${cond}</span><span>${ex.dur.toFixed(1)} s</span><span>${ex.id}</span></div></div>
     <div class="player mixrow" data-p="mix">
-      <div class="controls"><button class="play" type="button"></button><strong>Mixture</strong><span class="note" style="font-size:13px">what the listener hears</span><span class="time"></span></div>
+      <div class="controls"><button class="play" type="button"></button><strong>Mixture</strong><span class="note" style="font-size:13px">what you'd actually hear</span><span class="time"></span></div>
       ${specBox(s("mixture"), "the mixture", ex.dur)}
     </div>
     <div class="speakers">${ex.spk.map((p, i) => `
       <div class="spk">
-        <h3>Talker ${i + 1} <span>LibriSpeech speaker ${p.speaker}</span></h3>
+        <h3>Speaker ${i + 1} <span>LibriSpeech ID ${p.speaker}</span></h3>
         <div class="player" data-p="${p.k}">
           <div class="controls"><button class="play" type="button"></button>
             <div class="versions" role="group" aria-label="Version">
@@ -253,10 +254,10 @@ DATA.forEach((ex) => {
               <button type="button" data-v="ours" aria-pressed="true">Ours</button>
               <button type="button" data-v="dte" aria-pressed="false">Diarize-then-enroll</button>
             </div><span class="time"></span></div>
-          ${specBox(s("ours_" + p.k), "talker " + (i + 1), ex.dur)}
+          ${specBox(s("ours_" + p.k), "speaker " + (i + 1), ex.dur)}
         </div>
         <div class="scores" aria-label="SI-SDR improvement">${bar("Ours", "ours", p.ours)}${bar("Diarize-then-enroll", "dte", p.dte)}</div>
-        ${p.fallback ? `<p class="fallback">pyannote found too little solo speech for this talker, so it enrolled with all of their speech, overlap included.</p>` : ""}
+        ${p.fallback ? `<p class="fallback">pyannote couldn't find enough solo speech for this person, so it fell back to enrolling on everything they said, overlap and all.</p>` : ""}
       </div>`).join("")}
     </div>`;
   host.appendChild(el);
@@ -264,7 +265,7 @@ DATA.forEach((ex) => {
   ex.spk.forEach((p, i) => {
     const src = {};
     ["clean", "ours", "dte"].forEach((v) => (src[v] = { audio: a(`${v}_${p.k}`), spec: s(`${v}_${p.k}`), dur: ex.dur }));
-    players.push(new Player(el.querySelector(`[data-p="${p.k}"]`), src, "ours", `example ${ex.n} talker ${i + 1}`));
+    players.push(new Player(el.querySelector(`[data-p="${p.k}"]`), src, "ours", `example ${ex.n} speaker ${i + 1}`));
   });
 });
 
