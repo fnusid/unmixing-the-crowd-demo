@@ -12,29 +12,31 @@
 /* Layout: one listening column; each example = mixture strip on top, the two speakers side by side below,
    each speaker with a version switch so Clean / Ours / Diarize-then-enroll can be compared at the same moment. */
 :root {
-  --bg: #f4f6f9;
-  --panel: #ffffff;
-  --sunk: #eaeef3;
-  --fg: #141922;
-  --muted: #586273;
-  --line: #d8dee7;
-  --ours: #1f5fbf;
-  --dte: #b4521a;
-  --ref: #5b6575;
-  --focus: #1f5fbf;
+  /* Warm paper + ink, with teal for ours and burnt orange for diarize-then-enroll.
+     Teal sits opposite the magma spectrograms, so "ours" stands out next to them; teal vs orange stays distinct for colorblind viewers. */
+  --bg: #f6f1e8;
+  --panel: #fffcf7;
+  --sunk: #ede5d8;
+  --fg: #1f1a16;
+  --muted: #675c51;
+  --line: #e1d7c8;
+  --ours: #0e6f68;
+  --dte: #b5541b;
+  --ref: #6e655b;
+  --focus: #0e6f68;
   --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
   --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0d1117; --panel: #151b24; --sunk: #1c2430; --fg: #e7ebf1; --muted: #9aa5b5; --line: #2a3442;
-    --ours: #79a8f2; --dte: #f0915a; --ref: #a3adbb; --focus: #79a8f2; color-scheme: dark;
+    --bg: #14110e; --panel: #1d1915; --sunk: #2a241e; --fg: #f2ebe1; --muted: #a99d8f; --line: #362f28;
+    --ours: #3ccfbc; --dte: #f2a05a; --ref: #b5aa9c; --focus: #3ccfbc; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0d1117; --panel: #151b24; --sunk: #1c2430; --fg: #e7ebf1; --muted: #9aa5b5; --line: #2a3442;
-  --ours: #79a8f2; --dte: #f0915a; --ref: #a3adbb; --focus: #79a8f2; color-scheme: dark;
+  --bg: #14110e; --panel: #1d1915; --sunk: #2a241e; --fg: #f2ebe1; --muted: #a99d8f; --line: #362f28;
+  --ours: #3ccfbc; --dte: #f2a05a; --ref: #b5aa9c; --focus: #3ccfbc; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body {
@@ -44,7 +46,7 @@ body {
 }
 .wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 28px; }
 header { display: grid; gap: 14px; max-width: 760px; }
-.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--ours); margin: 0; }
 h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 5vw, 46px); line-height: 1.08; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
 .lead { margin: 0; font-size: 17px; color: var(--fg); max-width: 66ch; }
 .note { margin: 0; font-size: 14px; color: var(--muted); max-width: 70ch; }
@@ -88,8 +90,8 @@ article.ex { background: var(--panel); border: 1px solid var(--line); border-rad
 .versions button[data-v="clean"][aria-pressed="true"] { background: var(--ref); }
 .versions button[data-v="ours"][aria-pressed="true"] { background: var(--ours); }
 .versions button[data-v="dte"][aria-pressed="true"] { background: var(--dte); }
-:root[data-theme="dark"] .versions button[aria-pressed="true"] { color: #0d1117; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .versions button[aria-pressed="true"] { color: #0d1117; } }
+:root[data-theme="dark"] .versions button[aria-pressed="true"] { color: #14110e; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .versions button[aria-pressed="true"] { color: #14110e; } }
 .time { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: auto; font-variant-numeric: tabular-nums; }
 .spec {
   position: relative; border-radius: 8px; overflow: hidden; background: #000; cursor: pointer; aspect-ratio: 900 / 170;
@@ -105,7 +107,7 @@ article.ex { background: var(--panel); border: 1px solid var(--line); border-rad
 .bar { display: grid; grid-template-columns: 130px 1fr 62px; gap: 8px; align-items: center; }
 .bar .lab { color: var(--muted); }
 .bar .track { height: 8px; background: var(--sunk); border-radius: 4px; overflow: hidden; }
-.bar .fill { height: 100%; border-radius: 4px; }
+.bar .fill { display: block; height: 100%; border-radius: 4px; }
 .bar .val { font-family: var(--mono); font-size: 12.5px; text-align: right; font-variant-numeric: tabular-nums; }
 .fallback { font-size: 13px; color: var(--muted); margin: 0; border-left: 3px solid var(--dte); padding-left: 10px; }
 footer { border-top: 1px solid var(--line); padding-top: 20px; display: grid; gap: 10px; font-size: 14px; color: var(--muted); max-width: 820px; }
