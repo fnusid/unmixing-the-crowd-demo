@@ -11,35 +11,35 @@
 <style>
 /* Layout: one listening column; each example = mixture strip on top, the two speakers side by side below,
    each speaker with a version switch so Clean / Ours / Diarize-then-enroll can be compared at the same moment. */
-/* Palette: navy ink on cool white, blue for ours, maize-gold for diarize-then-enroll (a nod to Michigan's blue and maize).
-   Blue vs gold is the pair that stays most distinct under every common type of color blindness. */
+/* Palette: mid blue (between sky and navy) on a pale yellow page, with a darker gold for diarize-then-enroll.
+   Blue vs gold stays distinct under every common type of color blindness. */
 :root {
-  --bg: #f3f6fa;
-  --panel: #ffffff;
-  --sunk: #e4e9f0;
-  --fg: #00274c;
-  --muted: #4f5e73;
-  --line: #d6dee8;
-  --ours: #1f5bc8;
-  --dte: #c48f00;
-  --ref: #5d6a7c;
-  --on-ours: #ffffff; --on-dte: #00274c; --on-ref: #ffffff;
-  --focus: #1f5bc8;
+  --bg: #fbf8e7;
+  --panel: #fffef7;
+  --sunk: #f0ebd3;
+  --fg: #14263d;
+  --muted: #5a6170;
+  --line: #e7e0c4;
+  --ours: #2c6cb0;
+  --dte: #8a680f;
+  --ref: #687280;
+  --on-ours: #ffffff; --on-dte: #ffffff; --on-ref: #ffffff;
+  --focus: #2c6cb0;
   --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
   --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0a1220; --panel: #111b2c; --sunk: #1c283b; --fg: #e9eef6; --muted: #97a5b9; --line: #26344b;
-    --ours: #7ea8ff; --dte: #e2b13c; --ref: #a7b2c2; --on-ours: #0a1220; --on-dte: #0a1220; --on-ref: #0a1220;
-    --focus: #7ea8ff; color-scheme: dark;
+    --bg: #0e1a2a; --panel: #142337; --sunk: #1d2f47; --fg: #f5f0da; --muted: #a9b2bf; --line: #273a54;
+    --ours: #74aeea; --dte: #d9b652; --ref: #aeb6c1; --on-ours: #0e1a2a; --on-dte: #0e1a2a; --on-ref: #0e1a2a;
+    --focus: #74aeea; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0a1220; --panel: #111b2c; --sunk: #1c283b; --fg: #e9eef6; --muted: #97a5b9; --line: #26344b;
-  --ours: #7ea8ff; --dte: #e2b13c; --ref: #a7b2c2; --on-ours: #0a1220; --on-dte: #0a1220; --on-ref: #0a1220;
-  --focus: #7ea8ff; color-scheme: dark;
+  --bg: #0e1a2a; --panel: #142337; --sunk: #1d2f47; --fg: #f5f0da; --muted: #a9b2bf; --line: #273a54;
+  --ours: #74aeea; --dte: #d9b652; --ref: #aeb6c1; --on-ours: #0e1a2a; --on-dte: #0e1a2a; --on-ref: #0e1a2a;
+  --focus: #74aeea; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body {
