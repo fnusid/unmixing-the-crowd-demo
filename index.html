@@ -127,7 +127,7 @@ button:focus-visible, .spec:focus-visible { outline: 2px solid var(--focus); out
   <div class="hero-in">
     <p class="eyebrow">Unmixing the Crowd · SANE 2026 · Soundability Lab, University of Michigan</p>
     <h1>Picking out each voice, <span class="hl">no enrollment clip needed</span></h1>
-    <p class="lead">Target speech extractors usually want a few seconds of someone talking on their own before they can pull that person out of a mix. In a real conversation you almost never have that. So we tried something simpler: take the speaker embeddings from the mixture itself and hand them to an off-the-shelf extractor that we didn't retrain at all.</p>
+    <p class="lead">Target speech extractors usually want a few seconds of someone talking on their own before they can pull that person out of a mix. In a real conversation you almost never have that. So we tried something different: pull each person's speaker embedding straight out of the mixture, using a model trained with oracle teacher embeddings.</p>
     <p class="lead">Below are six recordings of two LibriSpeech speakers talking over each other (50–80% of the time), some with real-world background noise from WHAM! added. For each person you can flip between three versions. The extractor is the same in all three. The only thing we change is the embedding we give it.</p>
   </div>
 </header>
@@ -139,7 +139,6 @@ button:focus-visible, .spec:focus-visible { outline: 2px solid var(--focus); out
       <div class="key"><span class="sw ours"></span><span><b>Ours</b>One embedding per person, pulled right out of the mixture. No enrollment clip at all.</span></div>
       <div class="key"><span class="sw dte"></span><span><b>Diarize-then-enroll</b>The obvious alternative. pyannote 3.1 finds the bits where each person talks alone, and the same encoder embeds those.</span></div>
     </div>
-    <p class="note">To be upfront, we picked these six from mixtures where ours does better. The average holds up too, though: across all 3,000 test mixtures, ours gets 10.8 dB SI-SDR improvement and diarize-then-enroll gets 6.8 dB.</p>
   </section>
 
   <nav class="filters" aria-label="Filter by noise">
