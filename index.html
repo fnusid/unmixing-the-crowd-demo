@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Unmixing the Crowd Examples</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>html{color-scheme:light}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>
+/* Layout: one listening column; each example = mixture strip on top, the two speakers side by side below,
+   each speaker with a version switch so Clean / Ours / Diarize-then-enroll can be compared at the same moment. */
+:root {
+  --bg: #f4f6f9;
+  --panel: #ffffff;
+  --sunk: #eaeef3;
+  --fg: #141922;
+  --muted: #586273;
+  --line: #d8dee7;
+  --ours: #1f5fbf;
+  --dte: #b4521a;
+  --ref: #5b6575;
+  --focus: #1f5fbf;
+  --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1117; --panel: #151b24; --sunk: #1c2430; --fg: #e7ebf1; --muted: #9aa5b5; --line: #2a3442;
+    --ours: #79a8f2; --dte: #f0915a; --ref: #a3adbb; --focus: #79a8f2; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1117; --panel: #151b24; --sunk: #1c2430; --fg: #e7ebf1; --muted: #9aa5b5; --line: #2a3442;
+  --ours: #79a8f2; --dte: #f0915a; --ref: #a3adbb; --focus: #79a8f2; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.55;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 40px 64px;
+}
+.wrap { max-width: 1080px; margin: 0 auto; display: grid; gap: 28px; }
+header { display: grid; gap: 14px; max-width: 760px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 5vw, 46px); line-height: 1.08; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.lead { margin: 0; font-size: 17px; color: var(--fg); max-width: 66ch; }
+.note { margin: 0; font-size: 14px; color: var(--muted); max-width: 70ch; }
+.legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+.key { display: grid; grid-template-columns: 10px 1fr; gap: 10px; align-items: start; font-size: 14px; color: var(--muted); }
+.key b { color: var(--fg); display: block; font-weight: 700; }
+.sw { width: 10px; height: 10px; border-radius: 2px; margin-top: 6px; }
+.sw.ref { background: var(--ref); } .sw.ours { background: var(--ours); } .sw.dte { background: var(--dte); }
+nav.filters { display: flex; flex-wrap: wrap; gap: 8px; }
+nav.filters button {
+  font: 600 14px/1 var(--body); color: var(--fg); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 999px; padding: 9px 14px; cursor: pointer;
+}
+nav.filters button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+nav.filters .count { font-family: var(--mono); font-weight: 400; opacity: .7; margin-left: 6px; }
+.examples { display: grid; gap: 24px; }
+article.ex { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; display: grid; gap: 18px; }
+.exhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.exhead h2 { font-family: var(--display); font-weight: 700; font-size: 22px; margin: 0; }
+.meta { font-family: var(--mono); font-size: 12.5px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 14px; font-variant-numeric: tabular-nums; }
+.meta .cond { color: var(--fg); }
+.speakers { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+@media (max-width: 760px) { .speakers { grid-template-columns: 1fr; } article.ex { padding: 16px; } }
+.spk { display: grid; gap: 10px; min-width: 0; }
+.spk h3 { font-size: 15px; margin: 0; display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.spk h3 span { font-family: var(--mono); font-weight: 400; font-size: 12.5px; color: var(--muted); }
+.player { display: grid; gap: 8px; min-width: 0; }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.play {
+  width: 38px; height: 38px; border-radius: 50%; border: 0; background: var(--fg); color: var(--bg);
+  display: grid; place-items: center; cursor: pointer; flex: none;
+}
+.play svg { width: 14px; height: 14px; fill: currentColor; }
+.versions { display: inline-flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+.versions button {
+  font: 600 13.5px/1 var(--body); padding: 9px 12px; background: transparent; color: var(--muted); border: 0; cursor: pointer;
+  border-left: 1px solid var(--line);
+}
+.versions button:first-child { border-left: 0; }
+.versions button[aria-pressed="true"] { color: #fff; }
+.versions button[data-v="clean"][aria-pressed="true"] { background: var(--ref); }
+.versions button[data-v="ours"][aria-pressed="true"] { background: var(--ours); }
+.versions button[data-v="dte"][aria-pressed="true"] { background: var(--dte); }
+:root[data-theme="dark"] .versions button[aria-pressed="true"] { color: #0d1117; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .versions button[aria-pressed="true"] { color: #0d1117; } }
+.time { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: auto; font-variant-numeric: tabular-nums; }
+.spec {
+  position: relative; border-radius: 8px; overflow: hidden; background: #000; cursor: pointer; aspect-ratio: 900 / 170;
+  max-width: 100%; outline-offset: 3px;
+}
+.spec img { display: block; width: 100%; height: 100%; object-fit: fill; }
+.spec .head { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; left: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.35); opacity: 0; }
+.spec.active .head { opacity: 1; }
+.spec .axis { position: absolute; left: 6px; top: 4px; font: 10.5px/1 var(--mono); color: rgba(255,255,255,.75); pointer-events: none; }
+.spec .axis.b { top: auto; bottom: 4px; }
+.mixrow .spec { aspect-ratio: 900 / 120; }
+.scores { display: grid; gap: 5px; font-size: 13px; }
+.bar { display: grid; grid-template-columns: 130px 1fr 62px; gap: 8px; align-items: center; }
+.bar .lab { color: var(--muted); }
+.bar .track { height: 8px; background: var(--sunk); border-radius: 4px; overflow: hidden; }
+.bar .fill { height: 100%; border-radius: 4px; }
+.bar .val { font-family: var(--mono); font-size: 12.5px; text-align: right; font-variant-numeric: tabular-nums; }
+.fallback { font-size: 13px; color: var(--muted); margin: 0; border-left: 3px solid var(--dte); padding-left: 10px; }
+footer { border-top: 1px solid var(--line); padding-top: 20px; display: grid; gap: 10px; font-size: 14px; color: var(--muted); max-width: 820px; }
+footer p { margin: 0; }
+footer b { color: var(--fg); }
+button:focus-visible, .spec:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Unmixing the Crowd · SANE 2026 · Soundability Lab, University of Michigan</p>
+    <h1>Hear which voice each embedding pulls out</h1>
+    <p class="lead">Each example is two LibriSpeech talkers speaking at once (50–80% overlap), sometimes with WHAM! background noise. One frozen target speech extractor pulls out each talker, conditioned on a speaker embedding. Only the embedding changes between versions.</p>
+    <div class="legend" aria-label="Versions">
+      <div class="key"><span class="sw ref"></span><span><b>Clean reference</b>The talker alone, as recorded. What the extractor should produce.</span></div>
+      <div class="key"><span class="sw ours"></span><span><b>Ours</b>Embeddings taken straight from the mixture, one per talker. No enrollment recording.</span></div>
+      <div class="key"><span class="sw dte"></span><span><b>Diarize-then-enroll</b>pyannote 3.1 finds where each talker speaks alone; the same encoder embeds that audio.</span></div>
+    </div>
+    <p class="note">These six mixtures were chosen from cases where ours scores higher. Across all 3,000 test mixtures, ours averages 10.8 dB SI-SDR improvement and diarize-then-enroll 6.8 dB.</p>
+  </header>
+
+  <nav class="filters" aria-label="Filter by noise">
+    <button type="button" data-f="all" aria-pressed="true">All<span class="count">6</span></button>
+    <button type="button" data-f="quiet" aria-pressed="false">No noise<span class="count">2</span></button>
+    <button type="button" data-f="moderate" aria-pressed="false">Moderate noise<span class="count">2</span></button>
+    <button type="button" data-f="heavy" aria-pressed="false">Heavy noise<span class="count">2</span></button>
+  </nav>
+
+  <section class="examples" id="examples" aria-live="polite"></section>
+
+  <footer>
+    <p><b>How to listen.</b> Press play on a talker, then switch between Clean, Ours and Diarize-then-enroll while it plays: playback continues from the same moment. Click a spectrogram to jump to that point.</p>
+    <p><b>Scores.</b> SI-SDR improvement (dB): how much closer the extracted audio is to the clean talker than the raw mixture is. Higher is better. Both systems use the same frozen extractor and speaker encoder, and both are told there are two talkers.</p>
+    <p><b>Spectrograms.</b> 0–8 kHz, linear frequency, each clip scaled to its own peak over a 75 dB range.</p>
+  </footer>
+</div>
+
+<script>
+const DATA = [{"n":1,"cat":"quiet","dir":"1_clean/1089-134686-0013_3570-5695-0000","id":"1089-134686-0013_3570-5695-0000","snr":null,"dur":6.86,"spk":[{"k":"s1","speaker":"1089","mix_in":-1.6,"ours":15.3,"dte":10.3,"fallback":false},{"k":"s2","speaker":"3570","mix_in":1.3,"ours":14.4,"dte":8.1,"fallback":false}]},{"n":2,"cat":"quiet","dir":"1_clean/6829-68771-0022_1995-1837-0018","id":"6829-68771-0022_1995-1837-0018","snr":null,"dur":6.09,"spk":[{"k":"s1","speaker":"6829","mix_in":0.9,"ours":16.5,"dte":7.4,"fallback":true},{"k":"s2","speaker":"1995","mix_in":-1.1,"ours":17.2,"dte":11.2,"fallback":false}]},{"n":3,"cat":"moderate","dir":"3_moderate_noise/7729-102255-0041_1320-122617-0019","id":"7729-102255-0041_1320-122617-0019","snr":5.9,"dur":7.67,"spk":[{"k":"s1","speaker":"7729","mix_in":-1.7,"ours":12.0,"dte":7.6,"fallback":false},{"k":"s2","speaker":"1320","mix_in":-2.0,"ours":13.0,"dte":6.1,"fallback":false}]},{"n":4,"cat":"moderate","dir":"3_moderate_noise/8455-210777-0030_8463-294825-0004","id":"8455-210777-0030_8463-294825-0004","snr":8.6,"dur":5.65,"spk":[{"k":"s1","speaker":"8455","mix_in":-2.7,"ours":13.3,"dte":2.9,"fallback":true},{"k":"s2","speaker":"8463","mix_in":0.5,"ours":12.3,"dte":12.0,"fallback":false}]},{"n":5,"cat":"heavy","dir":"2_heavy_noise/5142-36377-0023_1580-141084-0023","id":"5142-36377-0023_1580-141084-0023","snr":-4.4,"dur":8.16,"spk":[{"k":"s1","speaker":"5142","mix_in":-10.9,"ours":17.3,"dte":3.9,"fallback":false},{"k":"s2","speaker":"1580","mix_in":-6.2,"ours":15.1,"dte":9.5,"fallback":false}]},{"n":6,"cat":"heavy","dir":"2_heavy_noise/237-134493-0015_3570-5694-0002","id":"237-134493-0015_3570-5694-0002","snr":-2.0,"dur":9.78,"spk":[{"k":"s1","speaker":"237","mix_in":-9.7,"ours":14.2,"dte":3.8,"fallback":false},{"k":"s2","speaker":"3570","mix_in":-3.7,"ours":12.8,"dte":10.6,"fallback":false}]}];
+const CAT = { quiet: "No noise", moderate: "Moderate noise", heavy: "Heavy noise" };
+const NAMES = { clean: "Clean", ours: "Ours", dte: "Diarize-then-enroll" };
+const SCALE = 18; // dB, right end of the score bars
+const PLAY = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9.5-5.5z"/></svg>';
+const PAUSE = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5h3v11H3zM8 1.5h3v11H8z"/></svg>';
+const players = [];
+const fmt = (s) => (isFinite(s) ? s.toFixed(1) : "0.0");
+
+class Player {
+  constructor(root, sources, initial, label) {
+    this.root = root; this.sources = sources; this.key = initial; this.label = label;
+    this.audio = new Audio(); this.audio.preload = "none";
+    this.btn = root.querySelector(".play"); this.spec = root.querySelector(".spec");
+    this.img = this.spec.querySelector("img"); this.head = this.spec.querySelector(".head");
+    this.time = root.querySelector(".time"); this.dur = sources[initial].dur;
+    this.loaded = null;
+    this.btn.addEventListener("click", () => this.toggle());
+    this.spec.addEventListener("click", (e) => {
+      const r = this.spec.getBoundingClientRect();
+      this.seek(((e.clientX - r.left) / r.width) * this.dur);
+    });
+    this.spec.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault(); this.seek(this.audio.currentTime + (e.key === "ArrowRight" ? 1 : -1));
+      } else if (e.key === " " || e.key === "Enter") { e.preventDefault(); this.toggle(); }
+    });
+    root.querySelectorAll(".versions button").forEach((b) => b.addEventListener("click", () => this.select(b.dataset.v)));
+    this.audio.addEventListener("ended", () => this.render());
+    this.audio.addEventListener("pause", () => this.render());
+    this.audio.addEventListener("play", () => { this.render(); this.tick(); });
+    this.render();
+  }
+  ensure(cb) {
+    const src = this.sources[this.key].audio;
+    if (this.loaded === src) return cb();
+    this.loaded = src; this.audio.src = src;
+    this.audio.addEventListener("loadedmetadata", cb, { once: true }); this.audio.load();
+  }
+  toggle() {
+    if (!this.audio.paused) { this.audio.pause(); return; }
+    players.forEach((p) => p !== this && p.audio.pause());
+    this.ensure(() => this.audio.play().catch(() => {}));
+  }
+  seek(t) {
+    t = Math.max(0, Math.min(t, this.dur - 0.05));
+    this.ensure(() => { this.audio.currentTime = t; this.render(); });
+  }
+  select(v) {
+    if (v === this.key) return;
+    const t = this.audio.currentTime, playing = !this.audio.paused;
+    this.key = v; this.img.src = this.sources[v].spec;
+    this.root.querySelectorAll(".versions button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+    if (this.loaded) {
+      this.ensure(() => { this.audio.currentTime = Math.min(t, this.audio.duration || t); if (playing) this.audio.play().catch(() => {}); this.render(); });
+    }
+    this.render();
+  }
+  tick() {
+    this.render();
+    if (!this.audio.paused) requestAnimationFrame(() => this.tick());
+  }
+  render() {
+    const t = this.audio.currentTime || 0, playing = !this.audio.paused;
+    this.btn.innerHTML = playing ? PAUSE : PLAY;
+    this.btn.setAttribute("aria-label", `${playing ? "Pause" : "Play"} ${this.label}${this.root.querySelector(".versions") ? ", " + NAMES[this.key] : ""}`);
+    this.head.style.left = `${(t / this.dur) * 100}%`;
+    this.spec.classList.toggle("active", t > 0 || playing);
+    this.time.textContent = `${fmt(t)} / ${fmt(this.dur)} s`;
+    this.spec.setAttribute("aria-valuenow", t.toFixed(1));
+  }
+}
+
+function specBox(src, label, max) {
+  return `<div class="spec" tabindex="0" role="slider" aria-label="Seek in ${label}" aria-valuemin="0" aria-valuemax="${max}" aria-valuenow="0">
+    <img src="${src}" alt="Spectrogram of ${label}" loading="lazy"><span class="head"></span>
+    <span class="axis">8 kHz</span><span class="axis b">0</span></div>`;
+}
+function bar(name, cls, v) {
+  const w = Math.max(0, Math.min(1, v / SCALE)) * 100;
+  return `<div class="bar"><span class="lab">${name}</span><span class="track"><span class="fill" style="width:${w}%;background:var(--${cls})"></span></span><span class="val">${v.toFixed(1)} dB</span></div>`;
+}
+
+const host = document.getElementById("examples");
+DATA.forEach((ex) => {
+  const a = (f) => `audio/${ex.dir}/${f}.wav`, s = (f) => `spec/${ex.dir}/${f}.webp`;
+  const el = document.createElement("article");
+  el.className = "ex"; el.dataset.cat = ex.cat; el.id = `example-${ex.n}`;
+  const cond = ex.snr === null ? "No noise" : `${CAT[ex.cat]}, SNR ${ex.snr > 0 ? "+" : ""}${ex.snr} dB`;
+  el.innerHTML = `
+    <div class="exhead"><h2>Example ${ex.n}</h2>
+      <div class="meta"><span class="cond">${cond}</span><span>${ex.dur.toFixed(1)} s</span><span>${ex.id}</span></div></div>
+    <div class="player mixrow" data-p="mix">
+      <div class="controls"><button class="play" type="button"></button><strong>Mixture</strong><span class="note" style="font-size:13px">what the listener hears</span><span class="time"></span></div>
+      ${specBox(s("mixture"), "the mixture", ex.dur)}
+    </div>
+    <div class="speakers">${ex.spk.map((p, i) => `
+      <div class="spk">
+        <h3>Talker ${i + 1} <span>LibriSpeech speaker ${p.speaker}</span></h3>
+        <div class="player" data-p="${p.k}">
+          <div class="controls"><button class="play" type="button"></button>
+            <div class="versions" role="group" aria-label="Version">
+              <button type="button" data-v="clean" aria-pressed="false">Clean</button>
+              <button type="button" data-v="ours" aria-pressed="true">Ours</button>
+              <button type="button" data-v="dte" aria-pressed="false">Diarize-then-enroll</button>
+            </div><span class="time"></span></div>
+          ${specBox(s("ours_" + p.k), "talker " + (i + 1), ex.dur)}
+        </div>
+        <div class="scores" aria-label="SI-SDR improvement">${bar("Ours", "ours", p.ours)}${bar("Diarize-then-enroll", "dte", p.dte)}</div>
+        ${p.fallback ? `<p class="fallback">pyannote found too little solo speech for this talker, so it enrolled with all of their speech, overlap included.</p>` : ""}
+      </div>`).join("")}
+    </div>`;
+  host.appendChild(el);
+  players.push(new Player(el.querySelector('[data-p="mix"]'), { mix: { audio: a("mixture"), spec: s("mixture"), dur: ex.dur } }, "mix", `example ${ex.n} mixture`));
+  ex.spk.forEach((p, i) => {
+    const src = {};
+    ["clean", "ours", "dte"].forEach((v) => (src[v] = { audio: a(`${v}_${p.k}`), spec: s(`${v}_${p.k}`), dur: ex.dur }));
+    players.push(new Player(el.querySelector(`[data-p="${p.k}"]`), src, "ours", `example ${ex.n} talker ${i + 1}`));
+  });
+});
+
+const buttons = document.querySelectorAll("nav.filters button");
+function applyFilter(f) {
+  buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.f === f)));
+  document.querySelectorAll("article.ex").forEach((a) => (a.hidden = !(f === "all" || a.dataset.cat === f)));
+}
+buttons.forEach((b) => b.addEventListener("click", () => applyFilter(b.dataset.f)));
+const h = location.hash.slice(1);
+if (["quiet", "moderate", "heavy"].includes(h)) applyFilter(h);
+</script>
+
+</body>
+</html>
