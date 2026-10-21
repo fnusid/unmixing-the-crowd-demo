@@ -11,32 +11,35 @@
 <style>
 /* Layout: one listening column; each example = mixture strip on top, the two speakers side by side below,
    each speaker with a version switch so Clean / Ours / Diarize-then-enroll can be compared at the same moment. */
+/* Palette: navy ink on cool white, blue for ours, maize-gold for diarize-then-enroll (a nod to Michigan's blue and maize).
+   Blue vs gold is the pair that stays most distinct under every common type of color blindness. */
 :root {
-  /* Warm paper + ink, with teal for ours and burnt orange for diarize-then-enroll.
-     Teal sits opposite the magma spectrograms, so "ours" stands out next to them; teal vs orange stays distinct for colorblind viewers. */
-  --bg: #f6f1e8;
-  --panel: #fffcf7;
-  --sunk: #ede5d8;
-  --fg: #1f1a16;
-  --muted: #675c51;
-  --line: #e1d7c8;
-  --ours: #0e6f68;
-  --dte: #b5541b;
-  --ref: #6e655b;
-  --focus: #0e6f68;
+  --bg: #f3f6fa;
+  --panel: #ffffff;
+  --sunk: #e4e9f0;
+  --fg: #00274c;
+  --muted: #4f5e73;
+  --line: #d6dee8;
+  --ours: #1f5bc8;
+  --dte: #c48f00;
+  --ref: #5d6a7c;
+  --on-ours: #ffffff; --on-dte: #00274c; --on-ref: #ffffff;
+  --focus: #1f5bc8;
   --display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
   --body: "Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #14110e; --panel: #1d1915; --sunk: #2a241e; --fg: #f2ebe1; --muted: #a99d8f; --line: #362f28;
-    --ours: #3ccfbc; --dte: #f2a05a; --ref: #b5aa9c; --focus: #3ccfbc; color-scheme: dark;
+    --bg: #0a1220; --panel: #111b2c; --sunk: #1c283b; --fg: #e9eef6; --muted: #97a5b9; --line: #26344b;
+    --ours: #7ea8ff; --dte: #e2b13c; --ref: #a7b2c2; --on-ours: #0a1220; --on-dte: #0a1220; --on-ref: #0a1220;
+    --focus: #7ea8ff; color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #14110e; --panel: #1d1915; --sunk: #2a241e; --fg: #f2ebe1; --muted: #a99d8f; --line: #362f28;
-  --ours: #3ccfbc; --dte: #f2a05a; --ref: #b5aa9c; --focus: #3ccfbc; color-scheme: dark;
+  --bg: #0a1220; --panel: #111b2c; --sunk: #1c283b; --fg: #e9eef6; --muted: #97a5b9; --line: #26344b;
+  --ours: #7ea8ff; --dte: #e2b13c; --ref: #a7b2c2; --on-ours: #0a1220; --on-dte: #0a1220; --on-ref: #0a1220;
+  --focus: #7ea8ff; color-scheme: dark;
 }
 * { box-sizing: border-box; }
 body {
@@ -86,12 +89,9 @@ article.ex { background: var(--panel); border: 1px solid var(--line); border-rad
   border-left: 1px solid var(--line);
 }
 .versions button:first-child { border-left: 0; }
-.versions button[aria-pressed="true"] { color: #fff; }
-.versions button[data-v="clean"][aria-pressed="true"] { background: var(--ref); }
-.versions button[data-v="ours"][aria-pressed="true"] { background: var(--ours); }
-.versions button[data-v="dte"][aria-pressed="true"] { background: var(--dte); }
-:root[data-theme="dark"] .versions button[aria-pressed="true"] { color: #14110e; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .versions button[aria-pressed="true"] { color: #14110e; } }
+.versions button[data-v="clean"][aria-pressed="true"] { background: var(--ref); color: var(--on-ref); }
+.versions button[data-v="ours"][aria-pressed="true"] { background: var(--ours); color: var(--on-ours); }
+.versions button[data-v="dte"][aria-pressed="true"] { background: var(--dte); color: var(--on-dte); }
 .time { font-family: var(--mono); font-size: 12px; color: var(--muted); margin-left: auto; font-variant-numeric: tabular-nums; }
 .spec {
   position: relative; border-radius: 8px; overflow: hidden; background: #000; cursor: pointer; aspect-ratio: 900 / 170;
